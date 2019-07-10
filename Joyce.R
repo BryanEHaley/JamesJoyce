@@ -109,52 +109,5 @@ set.seed(2017)
 ggraph(bigram_graph, layout = "fr") +
   geom_edge_link() +
   geom_node_point(color = "darkslategray4", size = 3) +
-  geom_node_text(aes(label = name), vjust = 1.8) + ggtitle("Common Bigrams in joyce' five Novels")
+  geom_node_text(aes(label = name), vjust = 1.8) + ggtitle("Common Bigrams in joyce' Novels")
 
-#
-install.packages("readr")
-install.packages("stringr")
-library(readr)
-library(stringr)
-
-getwd()
-
-raw_tale <- read_lines("4300-0.txt", skip = 30, n_max = 15500)
-tale <- character()
-for (i in seq_along(raw_tale)) {
-  if (i%%10 == 1) tale[ceiling(i/10)] <- str_c(raw_tale[i], 
-                                               raw_tale[i+1],
-                                               raw_tale[i+2],
-                                               raw_tale[i+3],
-                                               raw_tale[i+4],
-                                               raw_tale[i+5],
-                                               raw_tale[i+6],
-                                               raw_tale[i+7],
-                                               raw_tale[i+8],
-                                               raw_tale[i+9], sep = " ")
-}
-
-tale[9:10]
-
-#
-install.packages("syuzhet")
-library(syuzhet)
-tale_nrc <- cbind(linenumber = seq_along(tale), get_nrc_sentiment(tale))
-
-tale_nrc$negative <- -tale_nrc$negative
-pos_neg <- tale_nrc %>% select(linenumber, positive, negative) %>% 
-  melt(id = "linenumber")
-names(pos_neg) <- c("linenumber", "sentiment", "value")
-
-#
-tale_nrc$negative <- -tale_nrc$negative
-pos_neg <- tale_nrc %>% select(linenumber, positive, negative) %>% 
-  melt(id = "linenumber")
-names(pos_neg) <- c("linenumber", "sentiment", "value")
-library(ggthemes)
-ggplot(data = pos_neg, aes(x = linenumber, y = value, fill = sentiment)) +
-  geom_bar(stat = 'identity', position = position_dodge()) + theme_minimal() +
-  ylab("Sentiment") + 
-  ggtitle("Positive and Negative Sentiment in A Tale of Two Cities") +
-  scale_color_manual(values = c("orange", "blue")) +
-  scale_fill_manual(values = c("orange", "blue"))
